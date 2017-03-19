@@ -1,0 +1,1 @@
+StatusCodeError: 400 - {"resultInfo":{"result":"fail","url":"https://www.hertz.ca/rentacar/reservation/home","resultCode":400},"message":{"messages":["Return Date - please enter a valid return date [NRX112]"]}}
