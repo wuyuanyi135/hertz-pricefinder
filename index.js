@@ -83,28 +83,25 @@ var questions = [
 
 let result = [];
 let answers;
-var requestBody = { "lastName": "", "showRentalAgreement": false, "goldAnytimeRes": false, "forceResHomePage": "", "href": "/rentacar/rest/home/form", "confirmationNumber": "", "arrivingUpdate": "", "defaultTab": "", "militaryClock": 0, "majorAirport": "", "returnAtDifferentLocationCheckbox": "", "pickupLocation": "London - 460 York Street", "dropoffLocation": "", "inpPickupAutoFill": "", "inpPickupStateCode": "", "inpPickupCountryCode": "", "inpPickupSearchType": "", "inpPickupIsServedBy": "N", "inpPickupHasSpecialInstruction": "N", "inpDropoffAutoFill": "", "inpDropoffStateCode": "", "inpDropoffCountryCode": "", "inpDropoffSearchType": "", "pickupHiddenEOAG": "YXUC03", "dropoffHiddenEOAG": "", "memberOtherCdpField": "", "cdpField": "1826991", "corporateRate": "", "officialTravel": "", "pcNumber": "", "typeInRateQuote": "", "cvNumber": "", "itNumber": "", "originalRqCheckBox": "", "checkDiscount": "on", "pickupDay": "03/17/2017", "pickupTime": "17:00", "dropoffDay": "03/24/2017", "dropoffTime": "17:00", "no1ClubNumber": "", "selectedCarType": "ACAR", "ageSelector": "23", "redeemPoints": "", "fromLocationSearch": false, "pickupDayStandard": "2017/03/16", "dropoffDayStandard": "2017/03/23", "memberSelectedCdp": "", "cdpRadioButton": "" };
+//var requestBody = { "lastName": "", "showRentalAgreement": false, "goldAnytimeRes": false, "forceResHomePage": "", "href": "/rentacar/rest/home/form", "confirmationNumber": "", "arrivingUpdate": "", "defaultTab": "", "militaryClock": 0, "majorAirport": "", "returnAtDifferentLocationCheckbox": "", "pickupLocation": "London - 460 York Street", "dropoffLocation": "", "inpPickupAutoFill": "", "inpPickupStateCode": "", "inpPickupCountryCode": "", "inpPickupSearchType": "", "inpPickupIsServedBy": "N", "inpPickupHasSpecialInstruction": "N", "inpDropoffAutoFill": "", "inpDropoffStateCode": "", "inpDropoffCountryCode": "", "inpDropoffSearchType": "", "pickupHiddenEOAG": "YXUC03", "dropoffHiddenEOAG": "", "memberOtherCdpField": "", "cdpField": "1826991", "corporateRate": "", "officialTravel": "", "pcNumber": "", "typeInRateQuote": "", "cvNumber": "", "itNumber": "", "originalRqCheckBox": "", "checkDiscount": "on", "pickupDay": "03/17/2017", "pickupTime": "17:00", "dropoffDay": "03/24/2017", "dropoffTime": "17:00", "no1ClubNumber": "", "selectedCarType": "ACAR", "ageSelector": "23", "redeemPoints": "", "fromLocationSearch": false, "pickupDayStandard": "2017/03/16", "dropoffDayStandard": "2017/03/23", "memberSelectedCdp": "", "cdpRadioButton": "" };
+var requestBody = {"metadata":{"isReviewModify":false},"itinerary":{"age":"23","pickupLocationCode":"YTOC01","pickupLocationName":"Toronto - The Bay Store","returnLocationCode":"","returnLocationName":"","pickupDate":"03/22/2017","pickupTime":"09:00","militaryClock":0,"returnDate":"03/24/2017","returnTime":"09:00","vehicleType":"ACAR","cdp":"1826991","pc":"","rq":"","cv":"","it":"","useRewardPoints":"N","keepOriginalRateQuote":"","fromLocationSearch":false,"corporateRate":"","lastName":"","memberNumber":"","useProfileCDP":""}};
 (async function () {
     answers = await inquirer.prompt(questions);
     for (let i = 0; i < answers.searchDays; i++) {
         let pickupDate = new Date(answers.startDate);
         pickupDate.setDate(pickupDate.getDate() + i);
-        requestBody.pickupDayStandard = pickupDate.toLocaleDateString();
-        requestBody.pickupDay = pickupDate.toLocaleDateString();
+        requestBody.itinerary.pickupDay = pickupDate.toLocaleDateString();
 
         let dropOffDate = new Date();
         dropOffDate.setDate(pickupDate.getDate() + answers.rentDays);
 
-        requestBody.dropoffDayStandard = dropOffDate.toLocaleDateString();
-        requestBody.dropoffDay = dropOffDate.toLocaleDateString();
+        requestBody.itinerary.returnDate = dropOffDate.toLocaleDateString();
 
-        requestBody.pickupHiddenEOAG = "YTOC01";
-        requestBody.pickupLocation = "Toronto - The Bay Store";
-        requestBody.pickupTime = answers.time;
-        requestBody.dropoffTime = answers.time;
+        requestBody.itinerary.pickupTime = answers.time;
+        requestBody.itinerary.returnTime = answers.time;
 
         try {
-            const response = await rp("http://www.hertz.ca/rentacar/rest/hertz/v2/itinerary/vehicles", {
+            const response = await rp("https://www.hertz.ca/rentacar/rest/hertz/v2/reservations/makeReservation", {
                 headers: {
                     "Accept": "application/json, text/javascript, */*; q=0.01",
                     "Origin": "https://www.hertz.ca",
