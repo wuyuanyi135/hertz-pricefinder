@@ -89,17 +89,15 @@ var requestBody = { "lastName": "", "showRentalAgreement": false, "goldAnytimeRe
     for (let i = 0; i < answers.searchDays; i++) {
         let pickupDate = new Date(answers.startDate);
         pickupDate.setDate(pickupDate.getDate() + i);
-        requestBody.pickupDayStandard = pickupDate.toLocaleDateString();
-        requestBody.pickupDay = pickupDate.toLocaleDateString();
+        requestBody.pickupDayStandard = pickupDate.toLocaleDateString("en-us");
+        requestBody.pickupDay = pickupDate.toLocaleDateString("en-us");
 
         let dropOffDate = new Date();
         dropOffDate.setDate(pickupDate.getDate() + answers.rentDays);
 
-        requestBody.dropoffDayStandard = dropOffDate.toLocaleDateString();
-        requestBody.dropoffDay = dropOffDate.toLocaleDateString();
+        requestBody.dropoffDayStandard = dropOffDate.toLocaleDateString("en-us");
+        requestBody.dropoffDay = dropOffDate.toLocaleDateString("en-us");
 
-        requestBody.pickupHiddenEOAG = "YTOC01";
-        requestBody.pickupLocation = "Toronto - The Bay Store";
         requestBody.pickupTime = answers.time;
         requestBody.dropoffTime = answers.time;
 
@@ -141,7 +139,7 @@ var requestBody = { "lastName": "", "showRentalAgreement": false, "goldAnytimeRe
                 let quotes = car.quotes.filter((el) => el);
                 let price = quotes.reduce((acc, val) => val.approxTotalPrice < acc ? val.approxTotalPrice : acc, 99999);
                 let startDate = offsetDate(answers.startDate, index);
-                return { type: car.carTypeDisplay, price: price, startDate: startDate.toLocaleDateString() };
+                return { type: car.carTypeDisplay, price: price, startDate: startDate.toLocaleDateString("en-us") };
             });
             return dailyCarPrice;
         })
