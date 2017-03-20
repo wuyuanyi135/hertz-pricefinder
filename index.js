@@ -4,6 +4,7 @@ const delay = require("async-delay").default;
 const fs = require('fs');
 const _ = require('lodash');
 const Table = require('cli-table');
+const moment = require('moment');
 var inquirer = require("inquirer");
 function offsetDate(originDate, offsetDays) {
     var newDate = new Date(originDate);
@@ -87,16 +88,17 @@ var requestBody = { "lastName": "", "showRentalAgreement": false, "goldAnytimeRe
 (async function () {
     answers = await inquirer.prompt(questions);
     for (let i = 0; i < answers.searchDays; i++) {
-        let pickupDate = new Date(answers.startDate);
-        pickupDate.setDate(pickupDate.getDate() + i);
-        requestBody.pickupDayStandard = pickupDate.toLocaleDateString("en-us");
-        requestBody.pickupDay = pickupDate.toLocaleDateString("en-us");
+        let pickupDate = moment(new Date(answers.startDate));
+        pickupDate.add(i, 'day');
+        
+        console.log(`Processing ${pickupDate.format('M/D/YYYY')}`);
+        requestBody.pickupDayStandard = pickupDate.format('M/D/YYYY');
+        requestBody.pickupDay = pickupDate.format('M/D/YYYY');
 
-        let dropOffDate = new Date();
-        dropOffDate.setDate(pickupDate.getDate() + answers.rentDays);
-
-        requestBody.dropoffDayStandard = dropOffDate.toLocaleDateString("en-us");
-        requestBody.dropoffDay = dropOffDate.toLocaleDateString("en-us");
+        let dropOffDate = moment(pickupDate);
+        dropOffDate.add(answers.rentDays, 'days');
+        requestBody.dropoffDayStandard = dropOffDate.format('M/D/YYYY');
+        requestBody.dropoffDay = dropOffDate.format('M/D/YYYY');
 
         requestBody.pickupTime = answers.time;
         requestBody.dropoffTime = answers.time;
@@ -125,7 +127,6 @@ var requestBody = { "lastName": "", "showRentalAgreement": false, "goldAnytimeRe
             }
         } catch (error) {
             fs.writeFileSync('error.txt', error.toString());
-            console.log(error)
         }
 
         await delay(1000);
