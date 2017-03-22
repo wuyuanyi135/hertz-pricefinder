@@ -11,6 +11,16 @@ module.exports = {
             'name': 'London Airport',
             'internalName': 'London Airport',
             'EOAG': 'YXUT02'
+        },
+        {
+            'name': 'Toronto bay store',
+            'internalName': 'Toronto - The Bay Store',
+            'EOAG': 'YTOC01'
+        },
+        {
+            'name': 'Toronto - brookfield',
+            'internalName': 'Toronto - Brookfield Place',
+            'EOAG': 'YTOX38'
         }
     ],
 
