@@ -6,6 +6,8 @@ const _ = require('lodash');
 const Table = require('cli-table');
 const moment = require('moment');
 var inquirer = require("inquirer");
+const location = require('./location');
+
 function offsetDate(originDate, offsetDays) {
     var newDate = new Date(originDate);
     newDate.setDate(newDate.getDate() + offsetDays);
@@ -52,6 +54,15 @@ var questions = [
         }
     }, 
     {
+        type: "list",
+        name: "location",
+        message: "pickup location?",
+        choices: location.getNameList(),
+        filter: function (value) {
+            return location.getLocationObject(value);
+        }
+    },
+    {
         type: "input",
         name: "time",
         message: "When to rent and return?",
@@ -87,6 +98,10 @@ let answers;
 var requestBody = { "lastName": "", "showRentalAgreement": false, "goldAnytimeRes": false, "forceResHomePage": "", "href": "/rentacar/rest/home/form", "confirmationNumber": "", "arrivingUpdate": "", "defaultTab": "", "militaryClock": 0, "majorAirport": "", "returnAtDifferentLocationCheckbox": "", "pickupLocation": "London - 460 York Street", "dropoffLocation": "", "inpPickupAutoFill": "", "inpPickupStateCode": "", "inpPickupCountryCode": "", "inpPickupSearchType": "", "inpPickupIsServedBy": "N", "inpPickupHasSpecialInstruction": "N", "inpDropoffAutoFill": "", "inpDropoffStateCode": "", "inpDropoffCountryCode": "", "inpDropoffSearchType": "", "pickupHiddenEOAG": "YXUC03", "dropoffHiddenEOAG": "", "memberOtherCdpField": "", "cdpField": "1826991", "corporateRate": "", "officialTravel": "", "pcNumber": "", "typeInRateQuote": "", "cvNumber": "", "itNumber": "", "originalRqCheckBox": "", "checkDiscount": "on", "pickupDay": "03/17/2017", "pickupTime": "17:00", "dropoffDay": "03/24/2017", "dropoffTime": "17:00", "no1ClubNumber": "", "selectedCarType": "ACAR", "ageSelector": "23", "redeemPoints": "", "fromLocationSearch": false, "pickupDayStandard": "2017/03/16", "dropoffDayStandard": "2017/03/23", "memberSelectedCdp": "", "cdpRadioButton": "" };
 (async function () {
     answers = await inquirer.prompt(questions);
+    loc = answers.location;
+    requestBody.pickupLocation = loc.internalName;
+    requestBody.pickupHiddenEOAG = loc.EOAG;
+
     for (let i = 0; i < answers.searchDays; i++) {
         let pickupDate = moment(new Date(answers.startDate));
         pickupDate.add(i, 'day');
@@ -122,6 +137,7 @@ var requestBody = { "lastName": "", "showRentalAgreement": false, "goldAnytimeRe
                 gzip: true
             });
             vehicleList = response.data.model.vehicles;
+            fs.appendFileSync('output.txt', response);
             if(vehicleList) {
                 result.push(vehicleList);
             }
@@ -145,7 +161,6 @@ var requestBody = { "lastName": "", "showRentalAgreement": false, "goldAnytimeRe
             return dailyCarPrice;
         })
     var flt = _.flatten(resultObject);
-    fs.writeFileSync('output.txt', JSON.stringify(flt));
 
     var head = _(flt).map((v) => v.type).uniq().value();
     var headWithDate = head.slice(0);
@@ -161,6 +176,6 @@ var requestBody = { "lastName": "", "showRentalAgreement": false, "goldAnytimeRe
         table.push(retObj);
         return retObj;
     });
-
+    console.log(`Pickup location: ${answers.location.name}`);
     console.log(table.toString());
 })();
